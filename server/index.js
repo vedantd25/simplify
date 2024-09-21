@@ -18,8 +18,7 @@ connectToMongoDB('mongodb://0.0.0.0:27017/short-url')
 
 app.use(express.json())
 app.use("/url",urlRoute);
-app.set("view engine","ejs");
-app.set("views",path.resolve("./views"))
+
 
 app.get("/test",async (req,res)=>{
     return res.render('home');
