@@ -6,14 +6,14 @@ import { useState } from 'react';
 export default function Home() {
 
   const [url,setUrl]=useState('')
-  const handleSubmit=(e)=>{
+  const [shortId,setShortId]=useState('')
 
+  const handleSubmit=async(e)=>{
     e.preventDefault()
-    axios.post('http://localhost:8001/url',{url})
-    console.log("Data posted to API")
+    const res=await axios.post('http://localhost:8001/url',{url})
+    setShortId(res.data.id);
   }
 
-    
       return (
         <>
         <div>
@@ -24,7 +24,9 @@ export default function Home() {
           </form>
         </div>
 
-        
+        <div>
+          <p>Your short id is:{shortId}</p>
+        </div>
         </>
       );
     };
