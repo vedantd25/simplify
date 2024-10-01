@@ -8,21 +8,12 @@ const urlRoute=require('./routes/routes')
 const cors = require('cors');
 
 app.use(cors());
-app.options('*', cors()); // Allow preflight requests
+app.options('*', cors());
 
-
-connectToMongoDB('mongodb://0.0.0.0:27017/short-url')
-.then(()=>{
-    console.log("MongoDB Connected");
-})
+connectToMongoDB();
 
 app.use(express.json())
 app.use("/url",urlRoute);
-
-
-app.get("/test",async (req,res)=>{
-    return res.render('home');
-})
 
 app.get("/:shortId",async (req,res)=>{
     
@@ -47,5 +38,5 @@ app.get("/:shortId",async (req,res)=>{
 })
 
 app.listen(PORT,()=>{
-    console.log('Server running on port 8001');
+    console.log(`Server running on port ${PORT}`);
 })
