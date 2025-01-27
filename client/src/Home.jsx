@@ -36,6 +36,16 @@ export default function Home() {
       <div>
         <p>Your short id is: {shortId}</p>
       </div>
+
+      <div>
+  <p>
+    Your shortened URL is:{" "}
+    <a href={`http://localhost:8001/${shortId}`} target="_blank" rel="noopener noreferrer">
+      http://localhost:8001/{shortId}
+    </a>
+  </p>
+</div>
+
     </>
   );
 }

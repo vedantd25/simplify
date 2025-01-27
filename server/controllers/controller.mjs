@@ -22,3 +22,30 @@ export async function analytics(req, res) {
     const result = await URL.findOne({ shortId });
     return res.json({ noOfClicks: result.visitHistory.length, visitHistory: result.visitHistory });
 }
+
+export async function redirectURL(req,res){
+    const shortId = req.params.shortId;
+
+    try {
+      const entry = await URL.findOneAndUpdate(
+        { shortId }, // Find the document with the matching short ID
+        {
+          $push: {
+            visitHistory: {
+              timestamp: Date.now(),
+            },
+          },
+        }
+      );
+  
+      if (!entry) {
+        return res.status(404).json({ error: "Short URL not found" });
+      }
+  
+      res.redirect(entry.redirectURL); // Redirect to the original URL
+    } catch (error) {
+      console.error("Error fetching short ID:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  
+}
