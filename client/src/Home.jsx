@@ -7,7 +7,6 @@ export default function Home() {
 
   const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:8001";
 
-  console.log("Server URL:", SERVER_URL);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

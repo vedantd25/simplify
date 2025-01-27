@@ -1,4 +1,4 @@
-import shortid from 'shortid';
+import { nanoid } from 'nanoid';
 import URL from '../models/model.mjs';
 
 export async function handleGenerateNewShortURL(req, res) {
@@ -6,15 +6,26 @@ export async function handleGenerateNewShortURL(req, res) {
     
     if (!url) return res.status(400).json({ error: 'URL is required' });
 
-    const shortID = shortid.generate();  
+    const shortID = nanoid(10);  
 
-    await URL.create({
-        shortId: shortID,
-        redirectURL: url,
-        visitHistory: [],
-    });
+    try{
+        let existingEntry=await URL.findOne({redirectURL:url})
+        if(existingEntry){
+            return res.json({id:existingEntry.shortId})
+        }else{
+            const shortID=nanoid();
+            await URL.create({
+                shortId:shortID,
+                redirectURL:url,
+                visitHistory:[],
+            })
 
-    return res.json({ id: shortID });
+            return res.json({id:shortId})
+        }
+    }catch(err){
+        console.error("Error creating the url ",err);
+        res.status(500).json({error:"Internal server error"})
+    }
 }
 
 export async function analytics(req, res) {
