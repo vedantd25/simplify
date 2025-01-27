@@ -1,33 +1,41 @@
-import React from 'react'
-import axios from 'axios'
-import { useState } from 'react';
-
+import React, { useState } from "react";
+import axios from "axios";
 
 export default function Home() {
+  const [url, setUrl] = useState("");
+  const [shortId, setShortId] = useState("");
 
-  const [url,setUrl]=useState('')
-  const [shortId,setShortId]=useState('')
+  const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:8001";
 
-  const handleSubmit=async(e)=>{
-    e.preventDefault()
-    const res=await axios.post('http://localhost:8001/url',{url})
-    setShortId(res.data.id);
-  }
+  console.log("Server URL:", SERVER_URL);
 
-      return (
-        <>
-        <div>
-          <form action="" method='post' onSubmit={handleSubmit}>
-            <label htmlFor="url">Enter the url:</label>
-            <input type="text" id='url' value={url} onChange={(e)=>{setUrl(e.target.value)}}/>
-            <button type='submit' >Submit</button>
-          </form>
-        </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(`${SERVER_URL}/url`, { url });
+      setShortId(res.data.id);
+    } catch (error) {
+      console.error("Error posting the URL:", error.message);
+    }
+  };
 
-        <div>
-          <p>Your short id is:{shortId}</p>
-        </div>
-        </>
-      );
-    };
-
+  return (
+    <>
+      <div>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="url">Enter the URL:</label>
+          <input
+            type="text"
+            id="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+      <div>
+        <p>Your short id is: {shortId}</p>
+      </div>
+    </>
+  );
+}
