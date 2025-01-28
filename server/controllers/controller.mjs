@@ -1,62 +1,92 @@
 import { nanoid } from 'nanoid';
 import URL from '../models/model.mjs';
 
+// URL Normalizer Function
+function normalizeURL(url) {
+  // Check if the URL starts with "http://" or "https://"
+  if (!/^https?:\/\//i.test(url)) {
+    return `https://${url}`;
+  }
+  return url; // Return the URL unchanged if it already starts with "http://" or "https://"
+}
+
 export async function handleGenerateNewShortURL(req, res) {
-    const { url } = req.body;
+  const { url } = req.body;
+
+  if (!url) return res.status(400).json({ error: 'URL is required' });
+
+  try {
     
-    if (!url) return res.status(400).json({ error: 'URL is required' });
+    const normalizedURL = normalizeURL(url);
 
-    const shortID = nanoid(10);  
+    // Check if the URL already exists
+    let existingEntry = await URL.findOne({ redirectURL: normalizedURL });
+    if (existingEntry) {
+      return res.json({ id: existingEntry.shortId });
+    } else {
+      const shortID = nanoid(10);
+      await URL.create({
+        shortId: shortID,
+        redirectURL: normalizedURL,
+        visitHistory: [],
+      });
 
-    try{
-        let existingEntry=await URL.findOne({redirectURL:url})
-        if(existingEntry){
-            return res.json({id:existingEntry.shortId})
-        }else{
-            const shortID=nanoid();
-            await URL.create({
-                shortId:shortID,
-                redirectURL:url,
-                visitHistory:[],
-            })
-
-            return res.json({id:shortId})
-        }
-    }catch(err){
-        console.error("Error creating the url ",err);
-        res.status(500).json({error:"Internal server error"})
+      return res.json({ id: shortID });
     }
+  } catch (err) {
+    console.error("Error creating the URL:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 }
 
 export async function analytics(req, res) {
-    const shortId = req.params.shortId;
+  const shortId = req.params.shortId;
+
+  try {
     const result = await URL.findOne({ shortId });
-    return res.json({ noOfClicks: result.visitHistory.length, visitHistory: result.visitHistory });
+    if (!result) {
+      return res.status(404).json({ error: "Short URL not found" });
+    }
+
+    return res.json({
+      noOfClicks: result.visitHistory.length,
+      visitHistory: result.visitHistory,
+    });
+  } catch (err) {
+    console.error("Error fetching analytics:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 }
 
-export async function redirectURL(req,res){
-    const shortId = req.params.shortId;
+export async function redirectToURL(req, res) {
+  const shortId = req.params.shortId;
 
-    try {
-      const entry = await URL.findOneAndUpdate(
-        { shortId }, // Find the document with the matching short ID
-        {
-          $push: {
-            visitHistory: {
-              timestamp: Date.now(),
-            },
+  try {
+    const entry = await URL.findOneAndUpdate(
+      { shortId }, 
+      {
+        $push: {
+          visitHistory: {
+            timestamp: Date.now(),
           },
-        }
-      );
-  
-      if (!entry) {
-        return res.status(404).json({ error: "Short URL not found" });
+        },
       }
-  
-      res.redirect(entry.redirectURL); // Redirect to the original URL
-    } catch (error) {
-      console.error("Error fetching short ID:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    );
+
+    if (!entry) {
+      return res.status(404).json({ error: "Short URL not found" });
     }
-  
+
+    let redirectURL = entry.redirectURL;
+
+    // Ensure the URL is normalized before redirecting
+    if (!/^https?:\/\//i.test(redirectURL)) {
+      redirectURL = `https://${redirectURL}`;
+    }
+
+    res.redirect(redirectURL); // Redirect to the original URL
+  } catch (error) {
+    console.error("Error fetching short ID:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 }

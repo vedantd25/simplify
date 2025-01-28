@@ -15,9 +15,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-
-app.use(cors());
-
 connectToMongoDB();
 
 app.use(express.json());
