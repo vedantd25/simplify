@@ -5,6 +5,7 @@ import backgroundImage from '../../public/assets/10-2500x1667.jpg'
 export default function MainContent() {
   const [url, setUrl] = useState("");
   const [shortId, setShortId] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
 
   const SERVER_URL =  "http://localhost:8001";
 
@@ -16,6 +17,20 @@ export default function MainContent() {
     } catch (error) {
       console.error("Error posting the URL:", error.message);
     }
+  };
+
+  const handleCopyClick = () => {
+    // Copy the link to the clipboard
+    navigator.clipboard.writeText(`http://localhost:8001/${shortId}`)
+      .then(() => {
+        // Show the popup
+        setShowPopup(true);
+        // Hide the popup after 2 seconds
+        setTimeout(() => setShowPopup(false), 2000);
+      })
+      .catch((err) => {
+        console.error('Failed to copy text: ', err);
+      });
   };
 
   return (
@@ -70,11 +85,18 @@ export default function MainContent() {
       http://localhost:8001/{shortId}
     </a>
     <button
-      onClick={() => navigator.clipboard.writeText(`http://localhost:8001/${shortId}`)}
+      onClick={handleCopyClick}
       className="ml-auto px-4 py-2 bg-violet-800 text-white rounded-md hover:bg-violet-600 transition-colors duration-200 hover:scale-105"
     >
       Copy
     </button>
+
+    {showPopup && (
+        <div className="absolute top-150 right-175 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg">
+          Link Copied!
+        </div>
+      )}
+
   </div>
 )}
 
