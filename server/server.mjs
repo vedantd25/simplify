@@ -8,12 +8,12 @@ const app = express();
 const PORT = 8001;
 
 
-const corsOptions = {
+/*const corsOptions = {
     origin: 'https://url-shortener-client-g45gzrl3h-vedantd25s-projects.vercel.app/',
     optionsSuccessStatus: 200
-};
+};*/
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 connectToMongoDB();
 
