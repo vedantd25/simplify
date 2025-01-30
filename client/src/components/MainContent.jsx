@@ -7,7 +7,7 @@ export default function MainContent() {
   const [shortId, setShortId] = useState("");
   const [showPopup, setShowPopup] = useState(false);
 
-  const SERVER_URL =  "http://localhost:8001";
+  const SERVER_URL =  "https://simplify-fazr.onrender.com";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +21,7 @@ export default function MainContent() {
 
   const handleCopyClick = () => {
     // Copy the link to the clipboard
-    navigator.clipboard.writeText(`http://localhost:8001/${shortId}`)
+    navigator.clipboard.writeText(`https://simplify-fazr.onrender.com/${shortId}`)
       .then(() => {
         // Show the popup
         setShowPopup(true);
@@ -77,12 +77,12 @@ export default function MainContent() {
   <div className="mt-4 bg-white p-4 rounded-lg shadow-lg flex items-center gap-4 border border-gray-100">
     <p className="text-gray-700 font-medium">Your shortened URL is:</p>
     <a
-      href={`http://localhost:8001/${shortId}`}
+      href={`https://simplify-fazr.onrender.com/${shortId}`}
       target="_blank"
       rel="noopener noreferrer"
       className="text-blue-600 hover:text-blue-800 underline transition-colors duration-200 break-all"
     >
-      http://localhost:8001/{shortId}
+      https://simplify-fazr.onrender.com/{shortId}
     </a>
     <button
       onClick={handleCopyClick}

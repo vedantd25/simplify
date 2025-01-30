@@ -9,7 +9,7 @@ const PORT = 8001;
 
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: 'https://url-shortener-client-g45gzrl3h-vedantd25s-projects.vercel.app/',
     optionsSuccessStatus: 200
 };
 
